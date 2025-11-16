@@ -7,6 +7,4 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface TrustedBankRepository extends JpaRepository<TrustedBank, String> {
-    Optional<TrustedBank> findByCode(String code);
-}
+public interface TrustedBankRepository extends JpaRepository<TrustedBank, String> {}

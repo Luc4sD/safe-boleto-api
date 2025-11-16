@@ -45,11 +45,11 @@ class BoletoServiceTest {
     @BeforeEach
     void setUp() {
         // Configura o mock para simular um banco confiável
-        lenient().when(trustedBankRepository.findByCode("237"))
+        lenient().when(trustedBankRepository.findById("237"))
                  .thenReturn(Optional.of(new TrustedBank("237", "Bradesco")));
         
         // Configura o mock para simular um banco não confiável
-        lenient().when(trustedBankRepository.findByCode("999"))
+        lenient().when(trustedBankRepository.findById("999"))
                  .thenReturn(Optional.empty());
     }
 

@@ -77,7 +77,7 @@ public class BoletoService {
     }
 
     private String getBankNameFromBankCode(String bankCode) {
-        return trustedBankRepository.findByCode(bankCode)
+        return trustedBankRepository.findById(bankCode)
                 .map(trustedBank -> trustedBank.getName()) // Em Java moderno, pode ser trocado por .map(TrustedBank::getName)
                 .orElse(UNKNOWN_BANK_NAME);
     }
