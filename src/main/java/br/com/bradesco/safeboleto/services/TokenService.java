@@ -41,7 +41,12 @@ public class TokenService {
 
     public String getSubjectFromToken(String token) {
         try {
-            return Jwts.parser().verifyWith(getSigningKey()).build().parseSignedClaims(token).getPayload().getSubject();
+            return Jwts.parser()
+                    .verifyWith(getSigningKey())
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload()
+                    .getSubject();
         } catch (Exception e) {
             throw new JwtTokenException("Token JWT inválido ou expirado: " + e.getMessage());
         }

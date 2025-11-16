@@ -26,6 +26,8 @@ public class SecurityConfigurations {
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(req -> {
                     req.requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll();
+                    // Libera o acesso ao endpoint de Health Check
+                    req.requestMatchers(HttpMethod.GET, "/").permitAll();
                     // Libera o acesso à documentação do Swagger
                     req.requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll();
                     req.anyRequest().authenticated();

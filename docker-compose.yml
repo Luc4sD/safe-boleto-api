@@ -1,19 +1,17 @@
 services:
   db:
-    image: mysql:8.0
-    container_name: mysql_safeboleto
-    restart: always
+    image: postgres:17-alpine
+    container_name: postgres_safeboleto
     environment:
-      MYSQL_DATABASE: safeboleto_db
-      MYSQL_USER: user
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      MYSQL_ROOT_PASSWORD: rootpassword
+      POSTGRES_DB: safeboleto_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Lukinhas12
     ports:
-      - "3307:3306"
+      - "5432:5432"
     volumes:
-      - ./mysql-data:/var/lib/mysql
+      - postgres_volume:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost", "-u", "user", "--password=${MYSQL_PASSWORD}"]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -23,13 +21,20 @@ services:
     container_name: app_safeboleto
     ports:
       - "8080:8080"
-    environment:
-      # O Spring usará estas variáveis para se conectar ao banco de dados.
-      # O nome 'db' é o nome do serviço do banco de dados definido acima.
-      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/safeboleto_db?useSSL=false&allowPublicKeyRetrieval=true
-      SPRING_DATASOURCE_USERNAME: user
-      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update # Garante que as tabelas sejam criadas/atualizadas ao iniciar
     depends_on:
       db:
         condition: service_healthy
+    environment:
+      # --- Conexão com PostgreSQL 17 em Docker ---
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/safeboleto_db?connectTimeout=10&socketTimeout=30
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: Lukinhas12
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_SHOW_SQL: "false"
+      SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE: 5
+      SPRING_DATASOURCE_HIKARI_CONNECTION_TIMEOUT: 30000
+      SPRING_DATASOURCE_HIKARI_IDLE_TIMEOUT: 600000
+      SPRING_DATASOURCE_HIKARI_MAX_LIFETIME: 1800000
+
+volumes:
+  postgres_volume:
