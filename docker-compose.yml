@@ -3,15 +3,15 @@ services:
     image: postgres:17-alpine
     container_name: postgres_safeboleto
     environment:
-      POSTGRES_DB: safeboleto_db
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: Lukinhas12
+      POSTGRES_DB: safeboleto_db # Nome do banco de dados
+      POSTGRES_USER: ${POSTGRES_USER} # Lida do arquivo .env
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD} # Lida do arquivo .env
     ports:
       - "5432:5432"
     volumes:
       - postgres_volume:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -27,14 +27,19 @@ services:
     environment:
       # --- Conexão com PostgreSQL 17 em Docker ---
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/safeboleto_db?connectTimeout=10&socketTimeout=30
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: Lukinhas12
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER} # Lida do arquivo .env
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD} # Lida do arquivo .env
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
       SPRING_JPA_SHOW_SQL: "false"
       SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE: 5
       SPRING_DATASOURCE_HIKARI_CONNECTION_TIMEOUT: 30000
       SPRING_DATASOURCE_HIKARI_IDLE_TIMEOUT: 600000
       SPRING_DATASOURCE_HIKARI_MAX_LIFETIME: 1800000
+      # --- Configurações do JWT ---
+      # Mapeia diretamente para as propriedades em application.properties (ex: jwt.secret)
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION: ${JWT_EXPIRATION}
+      JWT_ISSUER: ${JWT_ISSUER}
 
 volumes:
   postgres_volume:

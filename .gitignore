@@ -40,3 +40,5 @@ build/
 
 ### Backup Files ###
 *.bak
+
+.fake

@@ -1,12 +1,18 @@
 # Estágio 1: Build com Maven
 FROM maven:3.9-eclipse-temurin-21 AS build
 WORKDIR /app
-# Copia o pom.xml e baixa as dependências para aproveitar o cache do Docker
+ 
+# Copia os scripts do Maven Wrapper e o pom.xml
+COPY mvnw .
+COPY .mvn .mvn
 COPY pom.xml .
-RUN mvn dependency:go-offline
-# Copia o código-fonte
-COPY src ./src
-RUN mvn clean package -DskipTests
+ 
+# Baixa as dependências usando o wrapper para consistência
+RUN ./mvnw dependency:go-offline
+ 
+# Copia o código-fonte e constrói o JAR
+COPY src ./src 
+RUN ./mvnw clean package -DskipTests
 
 # Estágio 2: Execução com JRE
 FROM eclipse-temurin:21-jre-jammy

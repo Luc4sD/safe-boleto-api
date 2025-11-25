@@ -28,11 +28,16 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String password;
 
+    @Column(nullable = false)
+    private String role;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // Para este exemplo, todos os usuários têm o papel (role) "USER".
-        // Em um cenário real, isso viria do banco de dados.
-        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        if ("ADMIN".equals(this.role)) {
+            return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));
+        } else {
+            return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        }
     }
 
     // Os métodos isAccountNonExpired, isAccountNonLocked, isCredentialsNonExpired e isEnabled

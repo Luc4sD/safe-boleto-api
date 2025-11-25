@@ -1,10 +1,10 @@
 # SafeBoleto API
 
-[!Java CI with Maven](https://github.com/Luc4sD/safe-boleto-api/actions/workflows/ci.yml)
+[![Java CI with Maven](https://github.com/Luc4sD/safe-boleto-api/actions/workflows/ci.yml/badge.svg)](https://github.com/Luc4sD/safe-boleto-api/actions/workflows/ci.yml)
 
 API RESTful desenvolvida com Spring Boot para validação de autenticidade de boletos bancários brasileiros. O sistema verifica a estrutura da linha digitável, a confiabilidade do banco emissor e a validade dos dígitos verificadores (Módulo 10 e Módulo 11), oferecendo um endpoint seguro para consulta e prevenindo fraudes.
 
-## ✨ Principais Funcionalidades
+## ✨ Funcionalidades
 
 -   **Validação de Linha Digitável**: Endpoint REST para submeter uma linha digitável de 47 dígitos.
 -   **Verificação de Banco Emissor**: Checa se o código do banco pertence a uma lista de instituições confiáveis.
@@ -32,17 +32,21 @@ API RESTful desenvolvida com Spring Boot para validação de autenticidade de bo
 
 ### 1. Configuração do Ambiente
 
-Na raiz do projeto, crie um arquivo chamado `.env` e preencha com as variáveis de ambiente necessárias. Este arquivo é ignorado pelo Git (`.gitignore`) para proteger suas credenciais.
+Na raiz do projeto, crie um arquivo chamado `.env` para centralizar suas variáveis de ambiente. Este arquivo é ignorado pelo Git (`.gitignore`) para proteger suas credenciais.
 
 ```env
-# Senha para o usuário 'postgres' do banco de dados PostgreSQL
-POSTGRES_PASSWORD=sua_senha_segura
+# Credenciais para o banco de dados PostgreSQL
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=Lukinhas12
 
-# Chave secreta para a geração de tokens JWT (deve ser uma string longa e segura)
+# Chave secreta para a geração de tokens JWT (use uma string longa e segura em produção)
 JWT_SECRET=Z2lkY29yZS1hcGktc2VjcmV0LWtleS1mb3Itand0LXNlY3VyaXR5LTIwMjQtZXhhbXBsZQo=
 
-# Senha inicial para o usuário 'admin' da aplicação
-ADMIN_PASSWORD=admin123
+# Tempo de expiração do token em milissegundos (ex: 36000000 = 10 horas)
+JWT_EXPIRATION=36000000
+
+# Emissor (issuer) do token, para validar sua origem
+JWT_ISSUER=safe-boleto-api
 ```
 
 ### 2. Executando com Docker Compose

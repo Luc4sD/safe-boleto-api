@@ -2,7 +2,7 @@ package br.com.bradesco.safeboleto.controllers;
 
 import br.com.bradesco.safeboleto.dto.LoginRequestDTO;
 import br.com.bradesco.safeboleto.dto.LoginResponseDTO;
-import br.com.bradesco.safeboleto.services.TokenService;
+import br.com.bradesco.safeboleto.security.JwtService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthenticationController {
 
     private final AuthenticationManager authenticationManager;
-    private final TokenService tokenService;
+    private final JwtService jwtService;
 
     @PostMapping("/login")
     @Operation(summary = "Realiza o login do usuário e retorna um token JWT",
@@ -32,7 +32,7 @@ public class AuthenticationController {
         var authenticationToken = new UsernamePasswordAuthenticationToken(loginRequest.username(), loginRequest.password());
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
 
-        String jwtToken = tokenService.generateToken(authentication);
+        String jwtToken = jwtService.generateToken((org.springframework.security.core.userdetails.UserDetails) authentication.getPrincipal());
 
         return ResponseEntity.ok(new LoginResponseDTO(jwtToken));
     }

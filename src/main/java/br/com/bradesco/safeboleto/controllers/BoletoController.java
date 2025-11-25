@@ -19,7 +19,7 @@ public class BoletoController {
 
     private final BoletoService boletoService;
 
-    @PostMapping("/validate")
+    @PostMapping("/valida")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @Operation(
         summary = "Validar boleto",

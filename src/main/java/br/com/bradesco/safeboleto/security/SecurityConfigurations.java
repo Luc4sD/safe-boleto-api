@@ -1,10 +1,9 @@
 package br.com.bradesco.safeboleto.security;
 
-import br.com.bradesco.safeboleto.security.SecurityFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -17,22 +16,32 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity // Habilita a segurança em nível de método (ex: @PreAuthorize)
 public class SecurityConfigurations {
     
+    // URLs que serão permitidas sem autenticação
+    private static final String[] AUTH_WHITELIST = {
+            "/", // Permite o acesso ao Health Check na raiz
+            "/api/auth/login",
+            "/swagger-ui.html",
+            "/swagger-ui/**",
+            "/v3/api-docs/**",
+            "/swagger-resources/**",
+            "/webjars/**"
+    };
+
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, SecurityFilter securityFilter) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthFilter) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(req -> {
-                    req.requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll();
-                    // Libera o acesso ao endpoint de Health Check
-                    req.requestMatchers(HttpMethod.GET, "/").permitAll();
-                    // Libera o acesso à documentação do Swagger
-                    req.requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll();
+                    req.requestMatchers(AUTH_WHITELIST).permitAll();
+                    req.requestMatchers("/api/boleto/**").authenticated();
+                    // Todas as outras requisições exigirão autenticação
                     req.anyRequest().authenticated();
                 })
-                .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
